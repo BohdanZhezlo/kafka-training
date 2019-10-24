@@ -36,7 +36,7 @@ class Consumer(id: Long, settings: Settings, csvWriter: ActorRef) extends Actor 
 
     case d: ProcessData =>
       log.info(s"Consumer $id, Thread: ${Thread.currentThread().getName} - Processing ${d.data.size} records")
-      processData(d)
+      processData(d.data)
       self ! Poll
   }
 
@@ -66,9 +66,9 @@ class Consumer(id: Long, settings: Settings, csvWriter: ActorRef) extends Actor 
     }
   }
 
-  def processData(data: ProcessData): Unit = {
-    if (data.data.nonEmpty) {
-      val toWrite = data.data.map { d =>
+  def processData(data: Seq[Data]): Unit = {
+    if (data.nonEmpty) {
+      val toWrite = data.map { d =>
         Array(
           id.toString,
           d.partition.toString,
